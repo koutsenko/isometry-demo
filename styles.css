@@ -1,0 +1,154 @@
+/* --- 1. ОБЩИЕ ПЕРЕМЕННЫЕ И БАЗОВЫЕ СТИЛИ --- */
+
+:root {
+    --color-text: antiquewhite;
+    --color-text-disabled: #888;
+    --color-background: #444;
+    --color-sprite: #000;
+}
+
+body {
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    margin: 32px;
+}
+
+a,
+a:visited {
+    color: var(--color-text);
+}
+
+/* --- 2. СТРУКТУРА СТРАНИЦЫ И ОБЩИЕ КОНТЕЙНЕРЫ --- */
+
+.test-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.test-description {
+    text-align: center;
+    max-width: 900px;
+}
+
+.test-description-text {
+    text-align: left;
+}
+
+/* --- 3. КОМПОНЕНТЫ --- */
+
+/* Компонент: Изометрическая сетка */
+.grid {
+    transform-origin: center;
+    transform: rotateX(60deg) rotateZ(45deg);
+    position: relative;
+}
+
+.tile {
+    position: absolute;
+    background: #555;
+    /* Использование box-shadow вместо border - больше гибкости */
+    box-shadow: 0 0 0 1px #000;
+}
+
+.tile-anchor-dot {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: red;
+    border-radius: 50%;
+    /* Для красоты позиционируем саму точку по центру ее координаты */
+    transform: translate(-50%, -50%);
+}
+
+/* Компонент: Спрайт */
+.sprite {
+    background: var(--color-sprite);
+    position: absolute;
+}
+
+.sprite-content {
+    text-align: center;
+    /* Обратная трансформация для "стоячего" элемента */
+    transform: rotateZ(-45deg) rotateX(-60deg);
+}
+
+/* Компонент: Переключатель решений */
+.solution-switcher {
+    text-align: left;
+}
+
+.solution-switcher h3 {
+    margin-top: 0;
+}
+
+.disabled-solution-label {
+    color: var(--color-text-disabled);
+}
+
+/* --- 4. СОСТОЯНИЯ: РЕШЕНИЯ ПРОБЛЕМЫ С ВЫСОТОЙ СПРАЙТА --- */
+
+/* Решение: Компенсирующая трансформация */
+.height-fix .sprite-content {
+    /* scaleY=4 - руками подогнанный размер компенсации */
+    transform: rotateZ(-45deg) rotateX(-60deg) scaleY(4);
+
+    /* padding - руками подогнанная позиция, чтобы "стоял" на этом тайле */
+    padding-bottom: 48px;
+    padding-left: 24px;
+}
+
+/* Решение: Перспектива */
+.perspective-fix.grid {
+    perspective: 300px;
+    transform-style: preserve-3d;
+}
+
+.perspective-fix .sprite {
+    transform-style: preserve-3d;
+}
+
+/* Решение: Смена родителя (спрайты за пределами трансформируемого контейнера) */
+.grid-wrapper {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: visible;
+}
+
+.grid-wrapper .grid {
+    transform-origin: left top;
+    transform: rotateX(60deg) rotateZ(45deg);
+    position: absolute;
+}
+
+.sprite-anchor-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: blue;
+    border-radius: 50%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.sprite-positioned-calculated {
+    position: absolute;
+    background: var(--color-sprite);
+    width: 96px;
+    height: 96px;
+    text-align: center;
+    z-index: 20;
+}
+
+.log-area {
+    font-size: 14px;
+    line-height: 1.4;
+}
+#log-area {
+    font-size: 14px;
+    line-height: 1.4;
+    max-height: calc(1.4em * 20); /* 20 lines */
+    overflow-y: auto;
+}
