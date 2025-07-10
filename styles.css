@@ -1,0 +1,110 @@
+/* --- 1. ОБЩИЕ ПЕРЕМЕННЫЕ И БАЗОВЫЕ СТИЛИ --- */
+
+:root {
+    --color-text: antiquewhite;
+    --color-background: #444;
+}
+
+body {
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    margin: 32px;
+}
+
+a,
+a:visited {
+    color: var(--color-text);
+}
+
+/* --- 2. СТРУКТУРА СТРАНИЦЫ И ОБЩИЕ КОНТЕЙНЕРЫ --- */
+
+.test-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.test-description {
+    text-align: center;
+    max-width: 900px;
+}
+
+.test-description-text {
+    text-align: left;
+}
+
+#log-area {
+    font-size: 14px;
+    line-height: 1.4;
+    max-height: calc(1.4em * 20); /* 20 lines */
+    overflow-y: auto;
+    width: 600px;
+}
+
+.solution-switcher {
+    text-align: left;
+}
+
+/* --- 3. КОМПОНЕНТЫ --- */
+
+#scene {
+    margin: 16px;
+}
+
+.grid {
+    transform-origin: center;
+    transform: rotateX(60deg) rotateZ(45deg);
+}
+
+.tile {
+    position: absolute;
+    background: #555;
+    /* Использование box-shadow вместо border - больше гибкости */
+    box-shadow: 0 0 0 1px #000;
+}
+
+.sprite {
+    position: absolute;
+    text-align: center;
+}
+
+/* --- 4. СОСТОЯНИЯ: ПРОБЛЕМА С ВЫСОТОЙ СПРАЙТА И ЕЕ РЕШЕНИЯ --- */
+
+/* Проблема: Плохо работающая обратная трансформация спрайта */
+.sprite-content {
+    /* Обратная трансформация для "стоячего" элемента */
+    transform: rotateZ(-45deg) rotateX(-60deg);
+}
+
+/* Решение: Компенсирующая трансформация */
+.height-fix .sprite-content {
+    /* scaleY=4 - руками подогнанный размер компенсации */
+    transform: rotateZ(-45deg) rotateX(-60deg) scaleY(4);
+
+    /* padding - руками подогнанная позиция, чтобы "стоял" на этом тайле */
+    padding-bottom: 48px;
+    padding-left: 24px;
+}
+
+/* Решение: Перспектива */
+.perspective-fix.grid {
+    perspective: 300px;
+    transform-style: preserve-3d;
+}
+
+.perspective-fix .sprite {
+    transform-style: preserve-3d;
+}
+
+/* Решение: Смена родителя (спрайты за пределами трансформируемого контейнера) */
+.grid-wrapper .grid {
+    transform-origin: left top;
+    transform: rotateX(60deg) rotateZ(45deg);
+}
+
+.grid-wrapper .sprite {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
