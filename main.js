@@ -103,13 +103,7 @@ function createSprite() {
     spriteContent.appendChild(spriteImage);
     sprite.appendChild(spriteContent);
     
-    // TODO Понять нужна ли отдельная функция для позиционирования спрайта.
-    // TODO И почему у тайла аналогичная функция тоже есть?
-    // TODO А у грида например нет? И он щас как попало рендерится.
-    placeSpriteAt(0, 0);
-    
-    // TODO Передать сюда parentElement.
-    grid.appendChild(sprite);
+    positionSprite(sprite, 0, 0, grid);
     log('Создан элемент спрайта и пристегнут к сетке');
 }
 
@@ -149,6 +143,19 @@ function placeTileAt(tileElement, x, y) {
 function placeSpriteAt(x, y) {
     sprite.style.left = x * TILE_WIDTH + 'px';
     sprite.style.top = y * TILE_HEIGHT + 'px';
+}
+
+/**
+ * Positions a sprite using pixel coordinates and attaches it to a parent
+ * @param {HTMLElement} spriteElement - Sprite element to position
+ * @param {number} x - Left position in pixels
+ * @param {number} y - Top position in pixels
+ * @param {HTMLElement} parent - Parent element to append the sprite to
+ */
+function positionSprite(spriteElement, x, y, parent) {
+    spriteElement.style.left = x + 'px';
+    spriteElement.style.top = y + 'px';
+    parent.appendChild(spriteElement);
 }
 
 /**
@@ -259,13 +266,11 @@ function processTile(tile, offsetX, offsetY) {
         sprite.appendChild(spriteImage);
         log('Изображение добавлено в спрайт'); // Лог после добавления изображения
 
-        // Позиционируем спрайт по центру тайла
-        sprite.style.left = (offsetX + centerProjected.x - SPRITE_WIDTH / 2) + 'px';
-        sprite.style.top = (offsetY + centerProjected.y - SPRITE_HEIGHT) + 'px';
+        // Позиционируем спрайт по центру тайла и добавляем в wrapper
+        const spriteLeft = offsetX + centerProjected.x - SPRITE_WIDTH / 2;
+        const spriteTop = offsetY + centerProjected.y - SPRITE_HEIGHT;
+        positionSprite(sprite, spriteLeft, spriteTop, gridWrapper);
         log(`Спрайт позиционирован: left=${sprite.style.left}, top=${sprite.style.top}`); // Лог позиции спрайта
-        
-        // Добавляем спрайт в wrapper
-        gridWrapper.appendChild(sprite);
         log('Спрайт добавлен в gridWrapper'); // Лог после добавления спрайта
     }
 }
