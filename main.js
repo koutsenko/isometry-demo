@@ -270,9 +270,74 @@ function processTile(tile, offsetX, offsetY) {
     }
 }
 
-function fillScene() {
+function fillSceneBase(options = {}) {
+    const { gridClass = '', usePositionsCalc = false } = options;
+
+    if (usePositionsCalc) {
+        log('Вызвана функция fillSceneBase с режимом positions-calc');
+
+        gridWrapper = document.createElement('div');
+        gridWrapper.classList.add(GRID_WRAPPER_CLASS);
+        scene.appendChild(gridWrapper);
+        log('Создан wrapper element для сцены');
+
+        grid = document.createElement('div');
+        grid.classList.add(GRID_CLASS, SOLUTION_POSITIONS_CALC_CLASS);
+        if (gridClass) {
+            grid.classList.add(gridClass);
+        }
+        grid.style.position = 'absolute';
+        grid.style.left = '0';
+        grid.style.top = '0';
+        gridWrapper.appendChild(grid);
+        log('Создан и добавлен grid');
+
+        const tilesData = [];
+        for (let y = 0; y < GRID_SIZE_Y; y++) {
+            for (let x = 0; x < GRID_SIZE_X; x++) {
+                tilesData.push({ x, y });
+
+                const newTile = document.createElement('div');
+                newTile.classList.add(TILE_CLASS);
+                newTile.setAttribute('data-x', x);
+                newTile.setAttribute('data-y', y);
+                newTile.style.width = TILE_WIDTH + 'px';
+                newTile.style.height = TILE_HEIGHT + 'px';
+                newTile.style.left = x * TILE_WIDTH + 'px';
+                newTile.style.top = y * TILE_HEIGHT + 'px';
+
+                grid.appendChild(newTile);
+            }
+        }
+
+        const boundingBox = calculateIsometricGridBoundingBox(tilesData, TILE_WIDTH, TILE_HEIGHT);
+
+        let offsetX = 0;
+        let offsetY = 0;
+        if (boundingBox.minX < 0) {
+            offsetX = -boundingBox.minX;
+        }
+        if (boundingBox.minY < 0) {
+            offsetY = -boundingBox.minY;
+        }
+
+        grid.style.left = offsetX + 'px';
+        grid.style.top = offsetY + 'px';
+
+        const tiles = grid.children;
+        Array.from(tiles).forEach(tile => processTile(tile, offsetX, offsetY));
+
+        log('Функция fillSceneBase завершена');
+        return;
+    }
+
     createGrid(GRID_SIZE_X, GRID_SIZE_Y, scene);
     log('В scene создан grid с количеством плиток: ' + GRID_SIZE_X + 'x' + GRID_SIZE_Y);
+
+    if (gridClass) {
+        grid.classList.add(gridClass);
+        log('На grid навешен доп. CSS класс ' + gridClass);
+    }
 
     for (let y = 0; y < GRID_SIZE_Y; y++) {
         for (let x = 0; x < GRID_SIZE_X; x++) {
@@ -285,111 +350,6 @@ function fillScene() {
     log('Создан спрайт');
 }
 
-function fillSceneWithHeightFix() {
-    createGrid(GRID_SIZE_X, GRID_SIZE_Y, scene);
-    log('В scene создан grid с количеством плиток: ' + GRID_SIZE_X + 'x' + GRID_SIZE_Y);
-
-    grid.classList.add(SOLUTION_HEIGHT_FIX_CLASS);
-    log('На grid навешен доп. CSS класс ' + SOLUTION_HEIGHT_FIX_CLASS);
-
-    for (let y = 0; y < GRID_SIZE_Y; y++) {
-        for (let x = 0; x < GRID_SIZE_X; x++) {
-            createTile(x, y);
-        }
-    }
-    log('Созданы тайлы');
-
-    createSprite();
-    log('Создан спрайт');
-}
-
-function fillSceneWithPerspectiveFix() {
-    createGrid(GRID_SIZE_X, GRID_SIZE_Y, scene);
-    log('В scene создан grid с количеством плиток: ' + GRID_SIZE_X + 'x' + GRID_SIZE_Y);
-
-    grid.classList.add(SOLUTION_PERSPECTIVE_FIX_CLASS);
-    log('На grid навешен доп. CSS класс ' + SOLUTION_PERSPECTIVE_FIX_CLASS);
-
-    for (let y = 0; y < GRID_SIZE_Y; y++) {
-        for (let x = 0; x < GRID_SIZE_X; x++) {
-            createTile(x, y);
-        }
-    }
-    log('Созданы тайлы');
-
-    createSprite();
-    log('Создан спрайт');
-}
-
-function fillSceneWithPositionsCalc() {
-    log('Вызвана функция fillSceneWithPositionsCalc'); // Лог в начале функции
-
-    // Настраиваем содержимое wrapper (создает grid и другие элементы)
-    gridWrapper = document.createElement('div');
-    gridWrapper.classList.add(GRID_WRAPPER_CLASS);
-    scene.appendChild(gridWrapper);
-    log('Создан wrapper element для сцены');
-
-    // Создаем копию изометрической сетки
-    grid = document.createElement('div');
-    grid.classList.add(GRID_CLASS, SOLUTION_POSITIONS_CALC_CLASS);
-    grid.style.position = 'absolute';
-    grid.style.left = '0';
-    grid.style.top = '0';
-    gridWrapper.appendChild(grid);
-    log('Создан и добавлен grid'); // Лог после создания grid
-    
-    // Получаем данные о тайлах и создаем элементы тайлов
-    const tilesData = [];
-    for (let y = 0; y < GRID_SIZE_Y; y++) {
-        for (let x = 0; x < GRID_SIZE_X; x++) {
-             // Генерируем данные о тайле
-            tilesData.push({ x, y });
-            
-            // Создаем элемент тайла для изометрической сетки
-            const newTile = document.createElement('div');
-            newTile.classList.add(TILE_CLASS);
-            newTile.setAttribute('data-x', x);
-            newTile.setAttribute('data-y', y);
-            newTile.style.width = TILE_WIDTH + 'px';
-            newTile.style.height = TILE_HEIGHT + 'px';
-            newTile.style.left = x * TILE_WIDTH + 'px';
-            newTile.style.top = y * TILE_HEIGHT + 'px';
-
-            grid.appendChild(newTile);
-            log(`Создан и добавлен тайл [${x}, ${y}]`); // Лог для каждого тайла
-        }
-    }
-    log('Содержимое grid после добавления тайлов: ' + grid.outerHTML);
-    log('Данные тайлов: ' + JSON.stringify(tilesData)); // Лог данных тайлов
-
-    // Рассчитываем необходимое смещение для grid
-    const boundingBox = calculateIsometricGridBoundingBox(tilesData, TILE_WIDTH, TILE_HEIGHT);
-    log('Рассчитан boundingBox: ' + JSON.stringify(boundingBox)); // Лог boundingBox
-    
-    let offsetX = 0;
-    let offsetY = 0;
-    
-    // Смещаем контейнер, чтобы левый верхний спроецированный угол совпал с (0,0) родительской обертки
-    if (boundingBox.minX < 0) {
-        offsetX = -boundingBox.minX;
-    }
-    
-    if (boundingBox.minY < 0) {
-        offsetY = -boundingBox.minY;
-    }
-    log(`Рассчитаны смещения: offsetX=${offsetX}, offsetY=${offsetY}`); // Лог смещений
-    
-    grid.style.left = offsetX + 'px';
-    grid.style.top = offsetY + 'px';
-    log(`Применены смещения к grid: left=${grid.style.left}, top=${grid.style.top}`); // Лог примененных смещений
-    
-    // Создаем и позиционируем точки для каждого тайла
-    const tiles = grid.children;
-    log('Дочерние элементы grid для добавления точек и спрайта: ' + tiles.length);
-    Array.from(tiles).forEach(tile => processTile(tile, offsetX, offsetY));
-    log('Функция fillSceneWithPositionsCalc завершена'); // Лог в конце функции
-}
 
 /**
  * Применяет выбранное решение к сетке
@@ -401,20 +361,19 @@ function applySolution() {
     const selectedSolution = document.querySelector(SOLUTION_RADIO_CHECKED_SELECTOR).value;
     log('Выбранное сейчас решение: ' + selectedSolution);
 
+    const options = {};
     switch (selectedSolution) {
-        case 'initial':
-            fillScene();
-            break;
         case 'height-fix':
-            fillSceneWithHeightFix();
+            options.gridClass = SOLUTION_HEIGHT_FIX_CLASS;
             break;
         case 'perspective-fix':
-            fillSceneWithPerspectiveFix();
+            options.gridClass = SOLUTION_PERSPECTIVE_FIX_CLASS;
             break;
         case 'positions-calc':
-            fillSceneWithPositionsCalc();
+            options.usePositionsCalc = true;
             break;
     }
+    fillSceneBase(options);
     log('Применено решение: ' + selectedSolution);
 }
 
