@@ -270,6 +270,14 @@ function processTile(tile, offsetX, offsetY) {
     }
 }
 
+/**
+ * Универсальная функция заполнения сцены.
+ *
+ * Если потребуется использовать выбранный вариант в другом проекте,
+ * функцию можно вынести в отдельный модуль. Для удобного экспорта стоит
+ * расширить её интерфейс: передавать контейнер сцены через options и
+ * возвращать созданные элементы (grid, gridWrapper и т.д.).
+ */
 function fillSceneBase(options = {}) {
     const { gridClass = '', usePositionsCalc = false } = options;
 
