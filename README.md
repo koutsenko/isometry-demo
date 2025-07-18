@@ -4,11 +4,11 @@
 
 ## Демо
 
-Демо на GitHub Pages https://koutsenko.github.io/isometry-demo/
+Демо на GitHub Pages https://koutsenko.github.io/isometry-demo/demo1/
 
 ## Локальный запуск
 
-Просто откройте файл `index.html` в современном браузере.
+Просто откройте файл `demo1/index.html` в современном браузере.
 
 ## Режимы
 

@@ -107,7 +107,7 @@
         spriteEl.style.height = px(SPRITE_HEIGHT);
 
         spriteImgEl = document.createElement('img');
-        spriteImgEl.src = 'orc.png';
+        spriteImgEl.src = './orc.png';
         spriteImgEl.alt = 'orc';
 
         if (isAlternate) {
