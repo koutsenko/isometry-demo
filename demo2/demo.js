@@ -1,0 +1,3 @@
+(function () {
+    api.fillScene();
+})();
