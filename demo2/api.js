@@ -42,15 +42,11 @@
      */
     function createGrid(sizeX, sizeY, parentEl) {
         gridEl = document.createElement('div');
-        gridEl.style.width = px(sizeX * TILE_WIDTH);
-        gridEl.style.height = px(sizeY * TILE_HEIGHT);
         gridEl.classList.add(GRID_CLASS);
-        gridEl.style.position = 'absolute';
-        gridEl.style.left = '0';
-        gridEl.style.top = '0';
+        gridEl.style.setProperty('--grid-w', px(sizeX * TILE_WIDTH));
+        gridEl.style.setProperty('--grid-h', px(sizeY * TILE_HEIGHT));
 
         gridWrapperEl = document.createElement('div');
-        gridWrapperEl.style.position = 'relative';
         gridWrapperEl.classList.add(GRID_WRAPPER_CLASS);
         gridWrapperEl.appendChild(gridEl);
 
@@ -76,10 +72,7 @@
     function createTile(gridX, gridY) {
         const tileEl = document.createElement('div');
         tileEl.classList.add(TILE_CLASS);
-        tileEl.style.width = px(TILE_WIDTH);
-        tileEl.style.height = px(TILE_HEIGHT);
-        tileEl.style.left = px(gridX * TILE_WIDTH);
-        tileEl.style.top = px(gridY * TILE_HEIGHT);
+        tileEl.style.transform = translate(gridX * TILE_WIDTH, gridY * TILE_HEIGHT);
 
         gridEl.appendChild(tileEl);
     }
@@ -96,15 +89,12 @@
 
         spriteEl = document.createElement('div');
         spriteEl.classList.add(SPRITE_CLASS);
-        spriteEl.style.width = px(SPRITE_WIDTH);
-        spriteEl.style.height = px(SPRITE_HEIGHT);
-        const {x, y} = math.getSpriteIsoPosition(
+        const { x, y } = math.getSpriteIsoPosition(
             [gridX, gridY],
             [TILE_WIDTH, TILE_HEIGHT],
             [SPRITE_WIDTH, SPRITE_HEIGHT]
         );
-        spriteEl.style.left = px(x + isoOffset.x);
-        spriteEl.style.top = px(y + isoOffset.y);
+        spriteEl.style.transform = translate(x + isoOffset.x, y + isoOffset.y);
         spriteEl.appendChild(spriteImgEl);
 
         gridWrapperEl.appendChild(spriteEl);
@@ -128,25 +118,25 @@
         return `${Math.round(value)}px`;
     }
 
+    function translate(x, y) {
+        return `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+    }
+
     /**
      * Сдвигает изометрическую сетку gridEl по центру и вписывает родительский контейнер в габариты ромба
-    *
-    * @param {HTMLElement} parentEl – родительский контейнер
-    * @param {HTMLElement} gridEl – изометрическая сетка
-    */
-   function adjustSceneSize(parentEl, gridEl) {
-       const { maxX, maxY, minX, minY } = math.calcIsoBox(GRID_SIZE_X * TILE_WIDTH, GRID_SIZE_Y * TILE_HEIGHT);
+     * @param {HTMLElement} parentEl – родительский контейнер
+     * @param {HTMLElement} gridEl – изометрическая сетка
+     */
+    function adjustSceneSize(parentEl, gridEl) {
+        const { maxX, maxY, minX, minY } = math.calcIsoBox(GRID_SIZE_X * TILE_WIDTH, GRID_SIZE_Y * TILE_HEIGHT);
 
-       gridEl.style.transformOrigin = '0 0';
-       gridEl.style.position = 'absolute';
-       gridEl.style.left = px(-minX);
-       gridEl.style.top = px(-minY);
+        gridEl.style.setProperty('--grid-x', px(-minX));
+        gridEl.style.setProperty('--grid-y', px(-minY));
 
-       parentEl.style.position = parentEl.style.position || 'relative';
-       parentEl.style.width = px(maxX - minX);
-       parentEl.style.height = px(maxY - minY);
+        parentEl.style.setProperty('--wrapper-w', px(maxX - minX));
+        parentEl.style.setProperty('--wrapper-h', px(maxY - minY));
 
-       return { x: -minX, y: -minY };
+        return { x: -minX, y: -minY };
     }
 
     sceneEl = document.querySelector(SCENE_SELECTOR);
