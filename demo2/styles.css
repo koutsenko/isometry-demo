@@ -35,42 +35,53 @@ a:visited {
 }
 
 #log-area {
-    font-size: 14px;
-    line-height: 1.4;
-    max-height: calc(1.4em * 20); /* 20 lines */
+    max-width: 900px;
     overflow-y: auto;
     width: 600px;
+    white-space: pre-wrap;
+    margin-top: 12px;
 }
 
 /* --- 3. КОМПОНЕНТЫ --- */
 
 #scene {
+    --tile-w: 96px;
+    --tile-h: 96px;
     margin: 16px;
 }
 
+.grid-wrapper {
+    --wrapper-w: 0;
+    --wrapper-h: 0;
+    position: relative;
+    width: var(--wrapper-w);
+    height: var(--wrapper-h);
+}
+
 .grid {
-    transform-origin: center;
-    transform: rotateX(60deg) rotateZ(45deg);
+    --grid-w: 0;
+    --grid-h: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--grid-w);
+    height: var(--grid-h);
+    transform-origin: left top;
+    transform: translate(var(--grid-x), var(--grid-y)) rotateX(60deg) rotateZ(45deg);
 }
 
 .tile {
     position: absolute;
+    width: var(--tile-w);
+    height: var(--tile-h);
     background: #555;
-    /* Использование box-shadow вместо border - больше гибкости */
     box-shadow: 0 0 0 1px #000;
 }
 
 .sprite {
     position: absolute;
-    text-align: center;
-}
-
-.grid-wrapper .grid {
-    transform-origin: left top;
-    transform: rotateX(60deg) rotateZ(45deg);
-}
-
-.grid-wrapper .sprite {
+    width: var(--tile-w);
+    height: var(--tile-h);
     display: flex;
     align-items: flex-end;
     justify-content: center;

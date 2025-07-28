@@ -1,3 +1,3 @@
 (function () {
-    api.fillScene();
+    api.makeScene();
 })();
