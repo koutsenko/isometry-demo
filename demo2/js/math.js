@@ -47,14 +47,16 @@
      * @param {number[]} gridXY - Координата тайла [x, y]
      * @param {number[]} tileSize - Размер тайла [width, height]
      * @param {number[]} spriteSize - Размер спрайта [width, height]
+     * @param {boolean} isBottomAnchor - Признак якоря по низу, а не по центру
     */
-    function getSpriteIsoPosition(gridXY, tileSize, spriteSize) {
+    function getSpriteIsoPosition(gridXY, tileSize, spriteSize, isBottomAnchor) {
         const [gridX, gridY] = gridXY;
         const [tileWidth, tileHeight] = tileSize;
         const [spriteWidth, spriteHeight] = spriteSize;
 
-        const tileCenterX = (gridX + 0.5) * tileWidth;
-        const tileCenterY = (gridY + 0.5) * tileHeight;
+        const delta = isBottomAnchor ? 1 : 0.5;
+        const tileCenterX = (gridX + delta) * tileWidth;
+        const tileCenterY = (gridY + delta) * tileHeight;
         const { x: isoX, y: isoY } = cartesianToIso(tileCenterX, tileCenterY);
 
         return {

@@ -35,11 +35,10 @@ a:visited {
 }
 
 #log-area {
-    max-width: 900px;
-    overflow-y: auto;
-    width: 600px;
-    white-space: pre-wrap;
     margin-top: 12px;
+    max-width: 900px;
+    width: 700px;
+    white-space: pre-wrap;
 }
 
 /* --- 3. КОМПОНЕНТЫ --- */
@@ -79,10 +78,9 @@ a:visited {
 }
 
 .sprite {
+    --size-w: 0;
+    --size-h: 0;
+    width: var(--size-w);
+    height: var(--size-h);
     position: absolute;
-    width: var(--tile-w);
-    height: var(--tile-h);
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
 }

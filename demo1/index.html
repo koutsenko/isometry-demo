@@ -10,6 +10,10 @@
 
 <body>
     <div class="test-container">
+        <div>
+            demo1
+            <a href="../demo2/index.html">demo2</a>
+        </div>
         <div class="test-description">
             <div class="test-description-text">
                 <h2>Проблема</h2>
@@ -30,12 +34,12 @@
                 </label>
                 <br>
                 <label>
-                    <input type="radio" name="solution" value="positions-calc"> решение с расчетами: вынос спрайтов из искаженного контейнера и позиционирование через расчеты
+                    <input type="radio" name="solution" value="positions-calc"> целевое решение: вынос спрайтов из искаженного контейнера и позиционирование через расчеты
                 </label>
             </div>
         </div>
         <div id="scene"></div>
-        <div id="log-area" style="white-space: pre-wrap; background: #222; color: #0f0; padding: 8px; margin-top: 12px; max-width: 900px;"></div>
+        <div id="log-area"></div>
     </div>
     <script src="./logger.js"></script>
     <script src="./math.js"></script>

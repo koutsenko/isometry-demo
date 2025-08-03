@@ -2,8 +2,6 @@
     // Константы размеров
     const TILE_WIDTH = 96;
     const TILE_HEIGHT = 96;
-    const SPRITE_WIDTH = 96;
-    const SPRITE_HEIGHT = 96;
 
     // Константы селекторов
     const SCENE_SELECTOR = '#scene';
@@ -21,7 +19,6 @@
     let gridWrapperEl;      // Буфер, содержит спрайты в прямых координатах и повернутую grid с изометрическими тайлами-декорацией
     let gridEl;             // Контейнер для тайлов поверхности
     let spriteEl;           // Основной элемент юнита
-    let spriteImgEl;        // IMG-изображение спрайта
 
     // Смещение начала координат для изометрической сетки относительно прямоугольника.
     let isoOffset = { x: 0, y: 0 };
@@ -29,6 +26,17 @@
     // Внутренние переменные с размерами сетки
     let gridSizeX = 0;
     let gridSizeY = 0;
+
+    /**
+     * Вычисляет высоту terrain в изометрической проекции
+     * @param {Object} terrain - Информация о terrain
+     * @returns {number} Высота terrain в пикселях
+     */
+    function calculateTerrainHeight(terrain) {
+        const {minX, maxX} = math.calcIsoBox(TILE_WIDTH, TILE_HEIGHT);
+        const width = maxX - minX;
+        return terrain.size[1] * width / terrain.size[0];
+    }
 
     /**
      * Создает сетку с указанными размерами, позиционирует ее в родителе и запоминает смещение позиции для спрайта
@@ -80,23 +88,68 @@
 
     /**
      * Создает и добавляет спрайт на сетку
+     * @param {Object} sprite - Информация о спрайте
      * @param {number} gridX - Координата X тайла
      * @param {number} gridY - Координата Y тайла
+     * @param {Object} terrain - Опциональная информация о terrain для поднятия спрайта
      */
-    function createSprite(gridX, gridY) {
-        spriteImgEl = document.createElement('img');
-        spriteImgEl.src = './orc.png';
-        spriteImgEl.alt = 'orc';
-
-        spriteEl = document.createElement('div');
-        spriteEl.classList.add(SPRITE_CLASS);
+    function createSprite(sprite, gridX, gridY, terrain) {
         const { x, y } = math.getSpriteIsoPosition(
             [gridX, gridY],
             [TILE_WIDTH, TILE_HEIGHT],
-            [SPRITE_WIDTH, SPRITE_HEIGHT]
+            [sprite.size[0], sprite.size[1]]
         );
+
+        spriteEl = document.createElement('img');
+        spriteEl.src = sprite.src;
+        spriteEl.alt = sprite.alt;
+        spriteEl.style.setProperty('--size-w', css.px(sprite.size[0]));
+        spriteEl.style.setProperty('--size-h', css.px(sprite.size[1]));
+
+        // Если передан terrain, поднимаем спрайт так, чтобы он стоял на его вершине
+        let yOffset = 0;
+        if (terrain) {
+            const terrainHeight = calculateTerrainHeight(terrain);
+
+            // Высота проекции одного изометрического тайла на экране (в пикселях)
+            const { minY, maxY } = math.calcIsoBox(TILE_WIDTH, TILE_HEIGHT);
+            const isoTileHeight = maxY - minY;
+
+            // Смещаем спрайт вверх на всю высоту террейна, затем возвращаем его на уровень земли
+            yOffset = -terrainHeight + isoTileHeight;
+        }
+
+        spriteEl.style.transform = css.translate(x + isoOffset.x, y + isoOffset.y + yOffset);
+        spriteEl.style.zIndex = 1000*gridY + gridX;
+        spriteEl.classList.add(SPRITE_CLASS);
+
+        gridWrapperEl.appendChild(spriteEl);
+    }
+
+    /**
+     * Создает спрайт-декорацию поверх тайла
+     * @param {number} gridX - Координата X тайла
+     * @param {number} gridY - Координата Y тайла
+     */
+    function createTerrain(terrain, gridX, gridY) {
+        const {minX, maxX} = math.calcIsoBox(TILE_WIDTH, TILE_HEIGHT);
+        const width = maxX - minX;
+        const height = calculateTerrainHeight(terrain);
+        const { x, y } = math.getSpriteIsoPosition(
+            [gridX, gridY],
+            [TILE_WIDTH, TILE_HEIGHT],
+            [width, height],
+            true
+        );
+
+        spriteEl = document.createElement('img');
+        spriteEl.src = terrain.src;
+        spriteEl.alt = terrain.alt;
+        spriteEl.style.setProperty('--size-w', css.px(width));
+        spriteEl.style.setProperty('--size-h', css.px(height));
         spriteEl.style.transform = css.translate(x + isoOffset.x, y + isoOffset.y);
-        spriteEl.appendChild(spriteImgEl);
+        spriteEl.style.zIndex = 1000*gridY + gridX;
+        spriteEl.classList.add(SPRITE_CLASS);
 
         gridWrapperEl.appendChild(spriteEl);
     }
@@ -120,7 +173,8 @@
 
     window.render = {
         createGrid,
-        createTiles,
         createSprite,
+        createTiles,
+        createTerrain,
     }
 })();
